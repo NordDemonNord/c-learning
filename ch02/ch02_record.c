@@ -4,18 +4,32 @@
     Author: Nord
 */
 
+/*
+ * === THEORY ===
+ *
+ * Exercise 1 (hello, world without return 0):
+ *   -std=c89: warning "control reaches end of non-void function".
+ *     main returns int, but reaches } without return, so the exit
+ *     status is undefined. Experiment: echo $? printed 39 = the value
+ *     printf returned (number of characters), left in the return
+ *     register (eax on x86-64). This is a coincidence, not a rule.
+ *   -std=c99 and later: special rule ONLY for main: reaching its
+ *     closing } is equivalent to return 0. No warning, echo $? = 0.
+ *   Fix for any standard: write return 0; explicitly.
+ */
+
 #include <stdio.h>
 
 int main( void )
 {
     
     /* === Section 1: Sphere (PP2 + PP3) === */
+    printf( "Enter radius(m): " );
 
     const float pi = 3.14159f; /* Use const instead of #define, because this variable is needed in calculations, not in arrays*/
 
     float radius = 0.0f;
 
-    printf( "Enter radius(m): " );
     scanf( "%f", &radius );
 
     float volume_1 = 4 / 3 * pi * ( radius * radius * radius ); /* Calculating volume, using int division*/
@@ -54,7 +68,7 @@ int main( void )
 
     /* Conversion to fixed cents */
 
-    int fixed_cents = amount * 100 + 0.5f; /* Convert dollars to cents by +0.5f: round to nearest instead of truncating (valid for amount ≥ 0) */
+    int fixed_cents = amount * 100 + 0.5f; /* Convert dollars to cents by +0.5f: round to nearest instead of truncating (valid for amount >= 0) */
 
     printf( "Cents(fixed): %d\n", fixed_cents );
 
@@ -72,6 +86,37 @@ int main( void )
     int cents_fixed = total_fixed_cents - fixed_dollars * 100;
 
     printf( "Cents version(fixed): With tax added: $%d.%02d\n", fixed_dollars, cents_fixed );
+
+        /*
+     * Results (tax = 5%, half a cent rounds up):
+     *
+     *   input         float version    cents version    correct
+     *   100.00        $105.00          $105.00          $105.00
+     *   19.99         $20.99           $20.99           $20.99
+     *   1.05          $1.10            $1.10            $1.10    (raw cents: 104)
+     *   2.10          $2.20            $2.21            $2.21    (raw cents: 209)
+     *   0.10          $0.10            $0.11            $0.11
+     *   1000000.01    $1050000.00      $1050000.00      $1050000.01
+     *
+     * 1. Raw cents: float stores most decimal fractions inexactly
+     *    (1.05f = 1.0499999...). amount * 100 gives 104.99999...,
+     *    and conversion to int truncates it to 104.
+     *    Adding 0.5f before conversion turns truncation into rounding
+     *    to the nearest integer. Valid only for amount >= 0.
+     *
+     * 2. 2.10 and 0.10: the exact result is exactly half a cent
+     *    (2.205 and 0.105). In binary these values are not exact, and
+     *    float stores them slightly below (2.20499969...). %.2f rounds
+     *    the STORED value correctly, so it goes down. The error comes
+     *    from storage, not from rounding.
+     *    In the cents version integers are exact: 210 * 5 = 1050, and
+     *    +50 (half of the divisor 100) rounds half a cent up.
+     *
+     * 3. 1000000.01 has 9 significant digits, float keeps about 7.
+     *    The cent is lost already in scanf("%f"), before any calculation,
+     *    so the cents version cannot restore it.
+     *    Fix: read dollars and cents as integers (chapter 3).
+     */
 
     return 0;
 }
