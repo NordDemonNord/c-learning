@@ -16,12 +16,16 @@ int main(void)      /* definition of main: program entry point, returns int stat
 {
     /* Input data. const = value is fixed at declaration and cannot be changed.
        Try 44900 as firmware size to test the rounding. */
-    const int firmware_size_bytes = 45000;
+    int firmware_size_bytes = 0; /* not const: the value comes from user input (scanf below) */
     const int page_size_bytes     = 2048;
     const int packet_size_bytes   = 64;
     const int uart_baud           = 115200;  /* UART: 1 baud = 1 bit per second */
     const int bits_per_frame      = 10;      /* 8N1 frame: start + 8 data + stop */
 
+    /* User should input size of firmware*/
+    printf("Enter firmware size in bytes: ");
+    scanf("%d", &firmware_size_bytes); /* scanf needs the ADDRESS of the variable to write into it: &x = "address of x" */
+    
     /* Integer division truncates (rounds down). Adding (divisor - 1)
        turns it into rounding UP: (a + b - 1) / b. Valid for a >= 0. */
     int pages_firmware = (firmware_size_bytes + (page_size_bytes - 1)) / page_size_bytes;
