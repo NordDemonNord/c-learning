@@ -10,6 +10,9 @@ only for reviewing already-written code.
 
 K. N. King, *C Programming: A Modern Approach*, 2nd edition (C89/C99).
 
+Code is compiled as C17: it is closer to embedded practice (STM32CubeIDE
+defaults to gnu11), and the book's C99 code compiles without changes.
+
 ## Repository structure
 
 ```
@@ -27,9 +30,12 @@ Each `chNN/` folder contains programs for the corresponding chapter of the book.
 All programs are built with strict warnings and runtime sanitizers:
 
 ```bash
-gcc -std=c17 -Wall -Wextra -Wpedantic -g -fsanitize=address,undefined file.c -o file
+gcc -std=c17 -Wall -Wextra -Wpedantic -Og -g -fsanitize=address,undefined file.c -o file
 ./file
 ```
+
+`-Og` enables the optimizer's data-flow analysis (needed for some warnings,
+e.g. `-Wmaybe-uninitialized`) while keeping the program debuggable in gdb.
 
 ## Environment
 
@@ -38,7 +44,7 @@ Ubuntu LTS, gcc, gdb, VS Code (clangd, AI features disabled), git.
 ## Progress
 
 - [x] Chapter 1 — Introducing C
-- [ ] Chapter 2 — C Fundamentals
+- [ ] Chapter 2 — C Fundamentals *(text read; exercises and programming projects pending)*
 - [ ] Chapter 3 — Formatted Input/Output
 - [ ] Chapter 4 — Expressions
 - [ ] Chapter 5 — Selection Statements
