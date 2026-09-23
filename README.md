@@ -44,7 +44,7 @@ Ubuntu LTS, gcc, gdb, VS Code (clangd, AI features disabled), git.
 ## Progress
 
 - [x] Chapter 1 — Introducing C
-- [ ] Chapter 2 — C Fundamentals *(text read; report `ch02_record.c`: exercise 1, sections 1–2 of 5 done)*
+- [x] Chapter 2 — C Fundamentals
 - [ ] Chapter 3 — Formatted Input/Output
 - [ ] Chapter 4 — Expressions
 - [ ] Chapter 5 — Selection Statements
