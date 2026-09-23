@@ -8,4 +8,5 @@ a.out
 ch*/*
 !ch*/*.c
 !ch*/*.h
+!ch*/*.md
 !ch*/*/
