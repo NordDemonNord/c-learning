@@ -68,7 +68,8 @@ built with the `gcc` command above: each project describes its own toolchain.
   GPIO, timers, ADC. University lab assignment.
   - [x] Circuit and pin mapping
   - [x] GPIO: clocks, pin modes, LEDs
-  - [ ] Timer tick
+  - [x] Timer: TIM3, polling the update flag
+  - [ ] Timer interrupt and 1 ms tick
   - [ ] ADC (potentiometer)
   - [ ] Button with debouncing
   - [ ] Traffic light state machine

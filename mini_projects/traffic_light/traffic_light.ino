@@ -7,12 +7,14 @@
 void setup()
 {
 
-  /* Включем тактирование на всех портах A, B и C */
+  /* Включем тактирование */
   RCC->IOPENR |= RCC_IOPENR_GPIOAEN; /* В блоке тактирования(RCC) берем конркетный регистр(IOPENR) и
                                         применяем на него маску(RCC_IOPENR_GPIOAEN),
                                         чтобы включить тактирование только для портов A */
   RCC->IOPENR |= RCC_IOPENR_GPIOBEN;
   RCC->IOPENR |= RCC_IOPENR_GPIOCEN;
+
+  RCC->APBENR1 |= RCC_APBENR1_TIM3EN; /* Включить тактирование TIM3 */
 
   /* Сбрасывание состояния портов */
 
@@ -50,6 +52,16 @@ void setup()
 
   GPIOA->MODER |= GPIO_MODER_MODE12_0; /* Зумер, пищание во время фазы перхода пешеходов */
 
+  /* Инициализация TIM3 */
+
+  TIM3->PSC = 48000 - 1; /* Начальный делитель */
+  TIM3->ARR = 500 - 1; /* Период */
+  TIM3->EGR = TIM_EGR_UG; /* Обновляем таймер для запуска с настроенным PSC */
+  TIM3->SR = ~TIM_SR_UIF; /* Сброс флага таймера */
+  TIM3->CR1 |= TIM_CR1_CEN; /* Начало отсчета */
+
+  #if 0
+
   /* Зажигаем все 5 светодиодов */
 
   GPIOA->BSRR = GPIO_BSRR_BS5; /* Красный светодиод для авто */
@@ -59,8 +71,34 @@ void setup()
   GPIOC->BSRR = GPIO_BSRR_BS7; /* Красный светодиод для пешеходов */
   GPIOA->BSRR = GPIO_BSRR_BS9; /* Зелёный светодиод для пешеходов */
 
+  #endif
+
 }
 
-void loop() {
+void loop()
+
+{
+
+  if ( ( TIM3->SR & TIM_SR_UIF ) != 0 ) /* Eсли флаг таймер поднят */
+
+  {
+
+      TIM3->SR = ~TIM_SR_UIF; /* Сброс флага таймера */
+
+      if ( ( GPIOA->ODR & GPIO_ODR_OD5 ) != 0 ) /* Проверка вывода порта красного светодиода для авто */
+
+      {
+
+          GPIOA->BSRR = GPIO_BSRR_BR5; /* Если горит, то потушить */
+
+      } else
+
+      {
+
+          GPIOA->BSRR = GPIO_BSRR_BS5; /* Иначе зажечь */
+
+      }
+
+  }
 
 }
