@@ -32,7 +32,7 @@ int main(void)
     printf( "[%-8.3f]\n", x ); /* c */
     printf( "[%6.0f]\n", x ); /* d */
 
-   /* Predictions and results: printf_formats.md */
+   /* Predictions and results: printf_formats.c */
     
     return 0;
 
