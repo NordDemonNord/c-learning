@@ -20,14 +20,18 @@ c-learning/
 ├── notes.md      # learning journal
 ├── ch02/         # programs and exercises for chapter 2
 ├── ch03/
-└── ...
+├── ...
+└── mini_projects/  # small hands-on projects outside the book
+    └── traffic_light/
 ```
 
 Each `chNN/` folder contains programs for the corresponding chapter of the book.
+Each `mini_projects/<name>/` folder is a self-contained project with its own
+notes file; the main journal only links to it.
 
 ## Build
 
-All programs are built with strict warnings and runtime sanitizers:
+All chapter programs are built with strict warnings and runtime sanitizers:
 
 ```bash
 gcc -std=c17 -Wall -Wextra -Wpedantic -Og -g -fsanitize=address,undefined file.c -o file
@@ -53,3 +57,19 @@ Ubuntu LTS, gcc, gdb, VS Code (clangd, AI features disabled), git.
 - [ ] Chapter 8 — Arrays
 - [ ] Chapter 9 — Functions
 - [ ] Chapter 10 — Program Organization
+
+## Mini projects
+
+Hands-on projects that apply C to real (or simulated) hardware. They are not
+built with the `gcc` command above: each project describes its own toolchain.
+
+- [ ] `traffic_light/` — traffic light with a pedestrian phase on request
+  (STM32 Nucleo-C031C6, simulated in Wokwi). Bare-register C via CMSIS:
+  GPIO, timers, ADC. University lab assignment.
+  - [x] Circuit and pin mapping
+  - [x] GPIO: clocks, pin modes, LEDs
+  - [ ] Timer tick
+  - [ ] ADC (potentiometer)
+  - [ ] Button with debouncing
+  - [ ] Traffic light state machine
+  - [ ] Buzzer
