@@ -4,6 +4,8 @@
   Автор: Nord
 */
 
+#include <stdbool.h>
+
 void setup()
 {
 
@@ -54,11 +56,11 @@ void setup()
 
   /* Инициализация TIM3 */
 
-  TIM3->PSC = 48000 - 1; /* Начальный делитель */
-  TIM3->ARR = 500 - 1; /* Период */
+  TIM3->PSC = 48 - 1; /* Начальный делитель */
+  TIM3->ARR = 1000 - 1; /* Период */
   TIM3->EGR = TIM_EGR_UG; /* Обновляем таймер для запуска с настроенным PSC */
   TIM3->SR = ~TIM_SR_UIF; /* Сброс флага таймера */
-  TIM3->CR1 |= TIM_CR1_CEN; /* Начало отсчета */
+  TIM3->CR1 |= TIM_CR1_CEN; /* Запуск таймера */
 
   #if 0
 
@@ -75,29 +77,173 @@ void setup()
 
 }
 
+uint32_t cnt_ticks = 0; /* Глобальный счетчик счетчик тиков */
+
+bool ped_request = 0;
+
+void button_check(void)
+
+{
+
+  if ( ( GPIOB->IDR & GPIO_IDR_ID10 ) == 0 )
+
+  {
+
+    ped_request = 1;
+
+  }
+
+}
+
+
+void wait_ms(uint32_t ms)
+
+{
+
+  uint32_t start = cnt_ticks;
+
+  while ( ( cnt_ticks - start ) < ms )
+
+  {
+
+    button_check();
+
+    if ( ( TIM3->SR & TIM_SR_UIF ) != 0 )
+
+    {
+
+    TIM3->SR = ~TIM_SR_UIF;
+
+    cnt_ticks ++;
+
+    }
+
+  }
+
+}
+
+
+void car_lights_set(bool red, bool yellow, bool green)
+
+{
+
+  if (red != 0)
+
+  {
+
+    GPIOA->BSRR = GPIO_BSRR_BS5;
+
+  } else
+
+  {
+
+    GPIOA->BSRR = GPIO_BSRR_BR5;
+
+  }
+
+  if (yellow != 0)
+
+  {
+
+    GPIOA->BSRR = GPIO_BSRR_BS6;
+
+  } else
+
+  {
+
+    GPIOA->BSRR = GPIO_BSRR_BR6;
+
+  }
+
+  if (green != 0)
+
+  {
+
+    GPIOA->BSRR = GPIO_BSRR_BS7;
+
+  } else
+
+  {
+
+    GPIOA->BSRR = GPIO_BSRR_BR7;
+
+  }
+
+}
+
+
+void ped_lights_set(bool red, bool green)
+
+{
+
+  if ( red != 0 )
+
+  {
+
+    GPIOC->BSRR = GPIO_BSRR_BS7;
+
+  } else
+
+  {
+
+    GPIOC->BSRR = GPIO_BSRR_BR7;
+
+  }
+
+  if ( green != 0 )
+
+  {
+
+    GPIOA->BSRR = GPIO_BSRR_BS9;
+
+  } else
+
+  {
+
+    GPIOA->BSRR = GPIO_BSRR_BR9;    
+
+  }
+
+}
+
 void loop()
 
 {
 
-  if ( ( TIM3->SR & TIM_SR_UIF ) != 0 ) /* Eсли флаг таймер поднят */
+  car_lights_set(1, 0, 0);
+  ped_lights_set(1, 0);
+
+  if ( ped_request != 0 )
 
   {
 
-      TIM3->SR = ~TIM_SR_UIF; /* Сброс флага таймера */
+    wait_ms(500);
 
-      if ( ( GPIOA->ODR & GPIO_ODR_OD5 ) != 0 ) /* Проверка вывода порта красного светодиода для авто */
+    ped_lights_set(0, 1);
 
-      {
+    wait_ms(1500);
 
-          GPIOA->BSRR = GPIO_BSRR_BR5; /* Если горит, то потушить */
+    ped_lights_set(1, 0);
 
-      } else
+    ped_request = 0;
 
-      {
+  } else
 
-          GPIOA->BSRR = GPIO_BSRR_BS5; /* Иначе зажечь */
+  {
 
-      }
+    wait_ms(1000);
+
+    car_lights_set(0, 1, 0);
+
+    wait_ms(1000);
+
+    car_lights_set(0, 0, 1);
+
+    wait_ms(1000);
+
+    car_lights_set(0, 1, 0);
+
+    wait_ms(1000);
 
   }
 

@@ -69,8 +69,10 @@ built with the `gcc` command above: each project describes its own toolchain.
   - [x] Circuit and pin mapping
   - [x] GPIO: clocks, pin modes, LEDs
   - [x] Timer: TIM3, polling the update flag
-  - [ ] Timer interrupt and 1 ms tick
+  - [-] Timer interrupt (clashes with the STM32duino core, kept polling)
+  - [x] 1 ms tick and wait_ms()
+  - [x] Button as a latched pedestrian request
+  - [x] Traffic light sequence (test timings)
+  - [ ] Real timings and blinking pedestrian green
   - [ ] ADC (potentiometer)
-  - [ ] Button with debouncing
-  - [ ] Traffic light state machine
   - [ ] Buzzer
